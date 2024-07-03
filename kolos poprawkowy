@@ -1,0 +1,123 @@
+#include <iostream>
+#include <cstring>
+#include <cmath>
+#define use_CRT_SECURE_NO_WARNINGS
+using namespace std;
+class Miejscowosc
+{
+
+};
+class Budynek
+{
+protected:
+    char* adres;
+    double metraz;
+    char* typ;
+    Miejscowosc& miejscowosc;
+    static int licznik;
+    bool spradzCzyPobliczny(char*typ);
+    int podatek = 10;
+public:
+    Budynek(char* adres, double metraz,char* typ, Miejscowosc& miejscowosc): adres(adres), metraz(metraz),typ(typ), miejscowosc(miejscowosc)
+    {
+        if (!spradzCzyPobliczny(typ))
+        {
+            licznik++;
+        }
+    }
+    ~Budynek();
+    void setMetraz(double metraz);
+    double getMetraz();
+    char* getTyp();
+    char* getAdres();
+    void setAdres(char* adres);
+    void setTyp(char* typ);
+    virtual double obliczPodatek();
+    bool operator ==(Miejscowosc& miejscowosc)
+    {
+
+    }
+    
+};
+int Budynek::licznik = 0;
+bool Budynek::spradzCzyPobliczny(char* typ)
+{
+    if (strcmp(typ, "Publiczny") == 0)
+        return true;
+    return false;
+}
+Budynek::~Budynek()
+{
+    if (!spradzCzyPobliczny(typ))
+    {
+        licznik--;
+    }
+}
+void Budynek::setMetraz(double metraz)
+{
+    this->metraz = metraz;
+    if (metraz < 5)
+        throw invalid_argument("Metraz nie moze byc mniejszy niz 5m^2");
+}
+double Budynek::getMetraz()
+{
+    if (metraz < 5)
+    {
+        throw invalid_argument("Metraz nie moze byc mniejszy niz 5m^2");
+    }
+    else
+    {
+        return metraz;
+    }
+}
+char* Budynek::getTyp()
+{
+    return typ;
+}
+void Budynek::setTyp(char* typ)
+{
+    this->typ = typ;
+}
+char* Budynek::getAdres()
+{
+    return adres;
+}
+void Budynek::setAdres(char* adres)
+{
+    this->adres = adres;
+}
+double Budynek::obliczPodatek()
+{
+    return podatek * metraz;
+}
+class Posiadlosc : public Budynek
+{
+protected:
+    int dzialka;
+public:
+    Posiadlosc(char* adres, double metraz,char* typ, Miejscowosc& miejscowosc, int dzialka):Budynek(adres, metraz,typ, miejscowosc)
+    {
+        this->dzialka = dzialka;
+    }
+    virtual double obliczPodatek()override;
+    operator double() {
+        return sqrt(metraz + dzialka);
+    }
+};
+double Posiadlosc::obliczPodatek()
+{
+    if (!spradzCzyPobliczny)
+    {
+         return(podatek * metraz) + (5 * dzialka);
+    }
+    else
+    {
+        return(podatek * metraz) + (5 * dzialka)+100; //ryczałt
+    }
+}
+
+int main()
+{
+    std::cout << "Hello World!\n";
+}
+
